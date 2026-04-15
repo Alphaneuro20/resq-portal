@@ -1,0 +1,353 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="light">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ResQ: Emergency Guide</title>
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <link rel="manifest" href="manifest.json">
+</head>
+<body>
+
+    <header>
+        <div class="gov-strip">
+            <span class="saffron"></span><span class="white"></span><span class="green"></span>
+        </div>
+        <div class="header-content">
+            <div class="logo-block">
+                <div class="emblem">🇮🇳</div> 
+                <div class="logo-text">
+                    <h1>ResQ Portal</h1>
+                    <p class="trans" data-key="header_sub">Offline Emergency Response</p>
+                </div>
+            </div>
+            
+            <div style="display: flex; gap: 10px; align-items: center;">
+                <button class="theme-btn" onclick="cycleTheme()" id="theme-btn" title="Change Theme">☀️</button>
+                <button class="lang-btn" onclick="toggleLanguage()"><span id="lang-display">EN</span></button>
+                <button class="hamburger-btn" onclick="toggleMobileTools()"><span class="bar"></span><span class="bar"></span><span class="bar"></span></button>
+            </div>
+        </div>
+    </header>
+
+    <div class="desktop-layout">
+
+        <aside class="sidebar left-panel" id="tools-panel">
+            <button class="mobile-close-btn trans" data-key="close_tools" onclick="toggleMobileTools()">✖ Close Tools</button>
+
+            <div class="panel-card">
+                <h3>⏱️ <span class="trans" data-key="timer">Incident Timer</span></h3>
+                <div id="timer-display">00:00:00</div>
+                <div class="timer-controls">
+                    <button class="btn-small start trans" data-key="start" onclick="startIncident()">▶ START</button>
+                    <button class="btn-small stop trans" data-key="stop" onclick="stopIncident()">⏹ STOP</button>
+                </div>
+                <p class="tiny-text trans" data-key="timer_desc">Start when emergency begins.</p>
+            </div>
+
+            <div class="panel-card">
+                <h3>📝 <span class="trans" data-key="log">Event Log</span></h3>
+                <div id="log-feed">
+                    <div class="empty-log trans" data-key="no_events">No events recorded.</div>
+                </div>
+                <div class="quick-actions">
+                    <button class="trans" data-key="log_unconscious" onclick="logEvent('Patient Unconscious')">😴 Unconscious</button>
+                    <button class="trans" data-key="log_vomit" onclick="logEvent('Patient Vomited')">🤮 Vomited</button>
+                    <button class="trans" data-key="log_cpr" onclick="logEvent('CPR Started')">❤️ CPR Start</button>
+                    <button class="trans" data-key="log_amb" onclick="logEvent('Ambulance Called')">🚑 Amb. Called</button>
+                    <button onclick="clearLog()" class="trans" data-key="clear_log" style="grid-column: span 2; background: #ffebee; color: #d32f2f; border: 1px solid #ef9a9a;">🗑️ Clear Log</button>
+                </div>
+            </div>
+
+            <div class="mobile-only-tools">
+                <div class="panel-card">
+                    <h3>🔊 <span class="trans" data-key="beacon">Audio Beacon</span></h3>
+                    <button class="btn-tool trans" data-key="siren" onclick="playSiren()">🚨 LOUD SIREN</button>
+                    <button class="btn-tool trans" data-key="whistle" onclick="playWhistle()">🦅 High Whistle</button>
+                    <button class="btn-tool stop-tool trans" data-key="silence" onclick="stopAudio()">🛑 STOP AUDIO</button>
+                </div>
+            </div>
+        </aside>
+
+        <main class="wrapper">
+            
+            <div id="main-menu">
+                <div class="search-container">
+                    <input type="text" id="search-bar" onkeyup="filterGuides()" placeholder="🔍 ...">
+                </div>
+                
+                <div class="section-title trans" data-key="my_data">My Data</div>
+                <button class="btn info" onclick="showScreen('profile-screen')">
+                    <div class="icon">🆔</div>
+                    <div class="text"><span class="title trans" data-key="med_id">Medical ID & Contacts</span></div><div class="arrow">➔</div>
+                </button>
+                <button class="btn location" onclick="getGPS()">
+                    <div class="icon">📍</div>
+                    <div class="text"><span class="title trans" data-key="gps">Share My GPS</span></div><div class="arrow">➔</div>
+                </button>
+
+                <div class="section-title trans" data-key="protocols">Emergency Protocols</div>
+                <button class="btn danger" onclick="showGuide('cpr')"><div class="icon">❤️</div><div class="text"><span class="title trans" data-key="cpr">CPR Guide</span></div><div class="arrow">➔</div></button>
+                <button class="btn warning" onclick="showGuide('bleeding')"><div class="icon">🩸</div><div class="text"><span class="title trans" data-key="bleeding">Severe Bleeding</span></div><div class="arrow">➔</div></button>
+                <button class="btn fire" onclick="showGuide('burn')"><div class="icon">🔥</div><div class="text"><span class="title trans" data-key="burn">Burns & Scalds</span></div><div class="arrow">➔</div></button>
+                <button class="btn fire" onclick="showGuide('heatstroke')"><div class="icon">☀️</div><div class="text"><span class="title trans" data-key="heat">Heatstroke</span></div><div class="arrow">➔</div></button>
+                <button class="btn info" onclick="showGuide('fracture')"><div class="icon">🦴</div><div class="text"><span class="title trans" data-key="fracture">Fractures</span></div><div class="arrow">➔</div></button>
+                <button class="btn danger" onclick="showGuide('snake')"><div class="icon">🐍</div><div class="text"><span class="title trans" data-key="snake">Snake Bite</span></div><div class="arrow">➔</div></button>
+
+                <div class="section-title trans" data-key="utilities">Utilities</div>
+                <button class="btn kit" onclick="showGuide('kit')"><div class="icon">🧰</div><div class="text"><span class="title trans" data-key="kit">First Aid Kit</span></div><div class="arrow">➔</div></button>
+                <button class="btn sos" onclick="toggleSOS()"><div class="icon">🔦</div><div class="text"><span class="title" style="color:white;">SOS SIGNAL</span></div></button>
+            </div>
+
+            <div id="guide-screen" class="hidden">
+                <div class="guide-header">
+                    <button class="back-btn trans" data-key="back" onclick="goHome()">⬅ Back</button>
+                    <button id="voice-btn" class="trans" data-key="read_aloud" onclick="toggleVoice()">🔇 Read Aloud</button>
+                </div>
+                <div id="guide-content"></div>
+            </div>
+
+            <div id="profile-screen" class="hidden">
+                <div class="guide-header"><button class="back-btn trans" data-key="back" onclick="goHome()">⬅ Back</button></div>
+                <div style="padding:20px;">
+                    <h3 class="trans" data-key="profile_title">Medical Profile</h3>
+                    <div class="input-group"><label class="trans" data-key="blood_type">Blood Type:</label><select id="blood-type"><option value="Unk">Unknown</option><option value="A+">A+</option><option value="O+">O+</option><option value="B+">B+</option><option value="AB+">AB+</option><option value="A-">A-</option><option value="O-">O-</option><option value="B-">B-</option></select></div>
+                    <div class="step-box">
+                        <h4 class="trans" data-key="prim_contact">Primary Contact</h4>
+                        <input type="text" id="fam1-name" placeholder="Name" class="wide-input">
+                        <input type="tel" id="fam1-phone" placeholder="Phone (e.g. 919876543210)" class="wide-input">
+                    </div>
+                    <div class="step-box">
+                        <h4>Secondary Contact</h4>
+                        <input type="text" id="fam2-name" placeholder="Name" class="wide-input">
+                        <input type="tel" id="fam2-phone" placeholder="Phone (e.g. 919876543210)" class="wide-input">
+                    </div>
+                    <p style="font-size:0.8rem; color:var(--text-sub); margin-top:-10px;">ℹ️ Enter phone with country code (e.g. 91xxxxxxxxxx) for WhatsApp GPS sharing.</p>
+                    <button class="btn info trans" data-key="save_btn" onclick="saveData()" style="width:100%; justify-content:center;">💾 Save Data</button>
+                    <div id="saved-data-display" style="display:none; margin-top:20px;"><h3 class="trans" data-key="saved_list">Saved List</h3><div id="contacts-list"></div></div>
+                </div>
+            </div>
+
+            <div id="emergency-screen" class="hidden">
+                <div class="guide-header"><button class="back-btn trans" data-key="back" onclick="goHome()">⬅ Back</button></div>
+                <div style="padding:20px;">
+                    <h2 class="trans" data-key="dir_title" style="color:var(--navy);">Emergency Directory</h2>
+                    <a href="tel:112" class="gov-card emergency-link"><div class="gov-text"><span class="gov-title trans" data-key="nat_help">National Helpline</span></div><div class="gov-number">112</div></a>
+                    <div class="gov-list-container">
+                        <a href="tel:100" class="gov-row emergency-link"><span class="gov-label trans" data-key="police">Police</span><span class="gov-val">100</span></a>
+                        <a href="tel:101" class="gov-row emergency-link"><span class="gov-label trans" data-key="fire">Fire</span><span class="gov-val">101</span></a>
+                        <a href="tel:102" class="gov-row emergency-link"><span class="gov-label trans" data-key="ambulance">Ambulance</span><span class="gov-val">102</span></a>
+                        <a href="tel:1091" class="gov-row emergency-link"><span class="gov-label trans" data-key="women">Women Helpline</span><span class="gov-val">1091</span></a>
+                        <a href="tel:1098" class="gov-row emergency-link"><span class="gov-label trans" data-key="child">Child Helpline</span><span class="gov-val">1098</span></a>
+                        <a href="tel:1073" class="gov-row emergency-link"><span class="gov-label trans" data-key="road">Road Accident</span><span class="gov-val">1073</span></a>
+                        <a href="tel:14567" class="gov-row emergency-link"><span class="gov-label trans" data-key="senior">Senior Citizen</span><span class="gov-val">14567</span></a>
+                        <a href="tel:1930" class="gov-row emergency-link"><span class="gov-label trans" data-key="cyber">Cyber Crime</span><span class="gov-val">1930</span></a>
+                        <a href="tel:139" class="gov-row emergency-link"><span class="gov-label trans" data-key="rail">Railway Help</span><span class="gov-val">139</span></a>
+                    </div>
+                </div>
+            </div>
+        </main>
+
+        <aside class="sidebar right-panel">
+            <div class="panel-card">
+                <h3>🔊 <span class="trans" data-key="beacon">Audio Beacon</span></h3>
+                <p class="tiny-text trans" data-key="beacon_desc">Use to attract attention.</p>
+                <button class="btn-tool trans" data-key="siren" onclick="playSiren()">🚨 LOUD SIREN</button>
+                <button class="btn-tool trans" data-key="whistle" onclick="playWhistle()">🦅 High Whistle</button>
+                <button class="btn-tool stop-tool trans" data-key="silence" onclick="stopAudio()">🛑 STOP AUDIO</button>
+            </div>
+
+            <div class="panel-card">
+                <h3>📋 <span class="trans" data-key="checklist">Handover Checklist</span></h3>
+                <div class="checklist">
+                    <label><input type="checkbox"> <span class="trans" data-key="chk_time">Time of Incident?</span></label>
+                    <label><input type="checkbox"> <span class="trans" data-key="chk_age">Patient Age?</span></label>
+                    <label><input type="checkbox"> <span class="trans" data-key="chk_breathing">Breathing Normal?</span></label>
+                    <label><input type="checkbox"> <span class="trans" data-key="chk_bleeding">Bleeding Controlled?</span></label>
+                    <label><input type="checkbox"> <span class="trans" data-key="chk_allergy">Allergies?</span></label>
+                    <label><input type="checkbox"> <span class="trans" data-key="chk_meds">Medications?</span></label>
+                </div>
+            </div>
+        </aside>
+
+    </div>
+
+    <div id="sos-screen" class="hidden" onclick="toggleSOS()">
+        <h1>S.O.S</h1>
+        <p>Tap screen to stop</p>
+    </div>
+
+    <!-- ========== EMERGENCY CONTACTS MODAL ========== -->
+    <div id="emergency-modal" class="modal-overlay hidden" onclick="closeEmergencyModal(event)">
+        <div class="modal-box">
+            <div class="modal-header">
+                <h2>🚨 Emergency Contacts</h2>
+                <button class="modal-close-btn" onclick="closeEmergencyModal()">✕</button>
+            </div>
+            <p class="modal-subtitle">Tap a number to call directly</p>
+
+            <div class="modal-section-title">🇮🇳 National Helplines</div>
+
+            <a href="tel:112" class="modal-contact national">
+                <div class="modal-contact-left">
+                    <span class="modal-contact-icon">🆘</span>
+                    <div>
+                        <span class="modal-contact-name">National Emergency</span>
+                        <span class="modal-contact-desc">All emergencies — Police, Fire, Ambulance</span>
+                    </div>
+                </div>
+                <span class="modal-contact-num">112</span>
+            </a>
+
+            <a href="tel:100" class="modal-contact police">
+                <div class="modal-contact-left">
+                    <span class="modal-contact-icon">👮</span>
+                    <div>
+                        <span class="modal-contact-name">Police</span>
+                        <span class="modal-contact-desc">Law enforcement</span>
+                    </div>
+                </div>
+                <span class="modal-contact-num">100</span>
+            </a>
+
+            <a href="tel:101" class="modal-contact fire">
+                <div class="modal-contact-left">
+                    <span class="modal-contact-icon">🔥</span>
+                    <div>
+                        <span class="modal-contact-name">Fire Brigade</span>
+                        <span class="modal-contact-desc">Fire & rescue services</span>
+                    </div>
+                </div>
+                <span class="modal-contact-num">101</span>
+            </a>
+
+            <a href="tel:102" class="modal-contact ambulance">
+                <div class="modal-contact-left">
+                    <span class="modal-contact-icon">🚑</span>
+                    <div>
+                        <span class="modal-contact-name">Ambulance</span>
+                        <span class="modal-contact-desc">Medical emergency</span>
+                    </div>
+                </div>
+                <span class="modal-contact-num">102</span>
+            </a>
+
+            <a href="tel:108" class="modal-contact ambulance">
+                <div class="modal-contact-left">
+                    <span class="modal-contact-icon">🏥</span>
+                    <div>
+                        <span class="modal-contact-name">Emergency Medical</span>
+                        <span class="modal-contact-desc">EMRI — Advanced life support</span>
+                    </div>
+                </div>
+                <span class="modal-contact-num">108</span>
+            </a>
+
+            <div class="modal-section-title">👩 Women & Child Safety</div>
+
+            <a href="tel:1091" class="modal-contact women">
+                <div class="modal-contact-left">
+                    <span class="modal-contact-icon">👩</span>
+                    <div>
+                        <span class="modal-contact-name">Women Helpline</span>
+                        <span class="modal-contact-desc">24/7 support for women</span>
+                    </div>
+                </div>
+                <span class="modal-contact-num">1091</span>
+            </a>
+
+            <a href="tel:181" class="modal-contact women">
+                <div class="modal-contact-left">
+                    <span class="modal-contact-icon">🛡️</span>
+                    <div>
+                        <span class="modal-contact-name">Nirbhaya / Women Distress</span>
+                        <span class="modal-contact-desc">National women safety helpline</span>
+                    </div>
+                </div>
+                <span class="modal-contact-num">181</span>
+            </a>
+
+            <a href="tel:1098" class="modal-contact child">
+                <div class="modal-contact-left">
+                    <span class="modal-contact-icon">🧒</span>
+                    <div>
+                        <span class="modal-contact-name">Childline</span>
+                        <span class="modal-contact-desc">Children in distress</span>
+                    </div>
+                </div>
+                <span class="modal-contact-num">1098</span>
+            </a>
+
+            <div class="modal-section-title">⚙️ Other Helplines</div>
+
+            <a href="tel:1073" class="modal-contact road">
+                <div class="modal-contact-left">
+                    <span class="modal-contact-icon">🚗</span>
+                    <div>
+                        <span class="modal-contact-name">Road Accident</span>
+                        <span class="modal-contact-desc">NHAI / accident relief</span>
+                    </div>
+                </div>
+                <span class="modal-contact-num">1073</span>
+            </a>
+
+            <a href="tel:1930" class="modal-contact cyber">
+                <div class="modal-contact-left">
+                    <span class="modal-contact-icon">💻</span>
+                    <div>
+                        <span class="modal-contact-name">Cyber Crime</span>
+                        <span class="modal-contact-desc">Online fraud & crimes</span>
+                    </div>
+                </div>
+                <span class="modal-contact-num">1930</span>
+            </a>
+
+            <a href="tel:14567" class="modal-contact senior">
+                <div class="modal-contact-left">
+                    <span class="modal-contact-icon">👴</span>
+                    <div>
+                        <span class="modal-contact-name">Senior Citizen</span>
+                        <span class="modal-contact-desc">Elder abuse & care</span>
+                    </div>
+                </div>
+                <span class="modal-contact-num">14567</span>
+            </a>
+
+            <a href="tel:139" class="modal-contact rail">
+                <div class="modal-contact-left">
+                    <span class="modal-contact-icon">🚂</span>
+                    <div>
+                        <span class="modal-contact-name">Railway Helpline</span>
+                        <span class="modal-contact-desc">Train emergencies</span>
+                    </div>
+                </div>
+                <span class="modal-contact-num">139</span>
+            </a>
+
+            <a href="tel:9152987821" class="modal-contact mental">
+                <div class="modal-contact-left">
+                    <span class="modal-contact-icon">🧠</span>
+                    <div>
+                        <span class="modal-contact-name">iCall Mental Health</span>
+                        <span class="modal-contact-desc">Mental health support</span>
+                    </div>
+                </div>
+                <span class="modal-contact-num">iCall</span>
+            </a>
+
+            <div class="modal-footer-note">📱 On mobile, tap any contact to dial directly.</div>
+        </div>
+    </div>
+    <!-- ========== END MODAL ========== -->
+
+    <div class="fab-container">
+        <button onclick="openEmergencyModal()" class="fab-btn" title="Emergency Contacts">📞</button>
+    </div>
+
+    <script src="script.js"></script>
+    <script>
+        if ('serviceWorker' in navigator) navigator.serviceWorker.register('sw.js').catch(err => console.log(err));
+    </script>
+</body>
+</html>
