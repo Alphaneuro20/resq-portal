@@ -14,7 +14,7 @@ const medicalData = {
     },
     fracture: {
         en: `<h3>Fracture (Broken Bone)</h3><img src="./fracture.jpg" class="guide-img"><div class="intro-box"><strong>Summary:</strong> Prevent movement to avoid nerve damage.</div><div class="step-box"><h4>1. Stop Bleeding</h4><p>Apply pressure to wound edges if bone pierced skin.</p></div><div class="step-box"><h4>2. Immobilize</h4><p>Do NOT try to push bone back. Tie a splint (stick/board) to the limb.</p></div><div class="step-box"><h4>3. Ice Pack</h4><p>Apply ice wrapped in cloth to reduce swelling.</p></div><div class="step-box"><h4>4. Elevate</h4><p>Raise limb slightly if possible to reduce throbbing.</p></div>`,
-        hi: `<h3>हड्डी टूटना</h3><img src="./fracture.jpg" class="guide-img"><div class="intro-box"><strong>सारांश:</strong> अंग को हिलाएं नहीं ताकि नस न दबे।</div><div class="step-box"><h4>1. खून रोकें</h4><p>अगर घाव है तो किनारों पर दबाव डालें।</p></div><div class="step-box"><h4>2. स्थिर रखें</h4><p>हड्डी को बिठाने की कोशिश न करें। लकड़ी से बांधें।</p></div><div class="step-box"><h4>3. बर्फ लगाएं</h4><p>सूजन कम करने के लिए कपड़े में बर्फ लगाकर सेकें।</p></div><div class="step-box"><h4>4. ऊपर उठाएं</h4><p>अंग को थोड़ा ऊपर रखें।</p></div>`,
+        hi: `<h3>हड्डी टूटना</h3><img src="./fracture.jpg" class="guide-img"><div class="intro-box"><strong>सारांश:</strong> अंग को हिलाएं नहीं ताकि नस न दबे।</div><div class="step-box"><h4>1. खून रोकें</h4><p>अगर घाव है तो किनारों पर दबाव डालें।</p></div><div class="step-box"><h4>2. स्थिर रखें</h4><p>हड्डी को बिठाने की कोशिश न करें। लकड़ी से बांधें।</p></div><div class="step-box"><h4>3. बर्फ लगाएं</h4><p>सूजन कम करने के लिए कपड़े में बर्फ लगाकर सेकें।</p></div><div class="step-box"><h4>4. ऊपर उठाएं</h4><p>अंग को थोड़ा ऊपर रखें.</p></div>`,
         mr: `<h3>हाड मोडणे (फ्रॅक्चर)</h3><img src="./fracture.jpg" class="guide-img"><div class="intro-box"><strong>सारांश:</strong> हालचाल नको. मज्जातंतूंचे नुकसान टाळा.</div><div class="step-box"><h4>1. रक्तस्राव थांबवा</h4><p>जखम असल्यास बाजूने दाबा.</p></div><div class="step-box"><h4>2. स्थिर ठेवा</h4><p>हाड बसवण्याचा प्रयत्न करू नका. काठीने बांधा.</p></div><div class="step-box"><h4>3. बर्फ लावा</h4><p>सूज कमी करण्यासाठी बर्फाने शेक द्या.</p></div><div class="step-box"><h4>4. उंच ठेवा</h4><p>शक्य असल्यास अवयव थोडा वर ठेवा.</p></div>`
     },
     bleeding: { en: `<h3>Severe Bleeding</h3><img src="./bleeding.jpg" class="guide-img"><div class="intro-box"><strong>Summary:</strong> Stop blood loss immediately using pressure.</div><div class="step-box"><h4>1. Pressure</h4><p>Apply direct pressure with clean cloth.</p></div><div class="step-box"><h4>2. Elevate</h4><p>Raise limb above heart level.</p></div><div class="step-box"><h4>3. Tourniquet</h4><p>Use only if bleeding won't stop. Tie tight above wound.</p></div>`, hi: `<h3>गंभीर रक्तस्राव</h3><img src="./bleeding.jpg" class="guide-img"><div class="intro-box"><strong>सारांश:</strong> खून तुरंत रोकें।</div><div class="step-box"><h4>1. दबाव</h4><p>साफ कपड़े से जोर से दबाएं।</p></div><div class="step-box"><h4>2. ऊपर उठाएं</h4><p>दिल के स्तर से ऊपर रखें।</p></div>`, mr: `<h3>रक्तस्त्राव</h3><img src="./bleeding.jpg" class="guide-img"><div class="intro-box"><strong>सारांश:</strong> रक्तस्राव त्वरित थांबवा.</div><div class="step-box"><h4>1. दाब द्या</h4><p>स्वच्छ कपड्याने जोरात दाबा.</p></div>` },
@@ -217,24 +217,56 @@ function logEvent(msg) {
 function clearLog() { document.getElementById('log-feed').innerHTML = `<div class="empty-log trans" data-key="no_events" style="opacity:0.7">${uiText.no_events[currentLang]}</div>`; }
 
 // ==========================================
-// 6. SAVE / LOAD DATA (with 2 contacts)
+// 6. SAVE / LOAD DATA (With Encryption & Regex)
 // ==========================================
+const SECRET_KEY = "RESQ_KEY"; 
+
+function xorCipher(input, key) {
+    if (!input) return "";
+    let output = '';
+    for (let i = 0; i < input.length; i++) {
+        output += String.fromCharCode(input.charCodeAt(i) ^ key.charCodeAt(i % key.length));
+    }
+    return output;
+}
+
 function saveData() {
+    const phone1 = document.getElementById('fam1-phone').value;
+    const phone2 = document.getElementById('fam2-phone').value;
+    
+    const phoneRegex = /^[0-9]{10}$/; 
+    if (phone1 && !phoneRegex.test(phone1)) {
+        alert("Security Alert: Primary contact must be exactly 10 digits.");
+        return;
+    }
+    if (phone2 && !phoneRegex.test(phone2)) {
+        alert("Security Alert: Secondary contact must be exactly 10 digits.");
+        return;
+    }
+
     localStorage.setItem('resq_fam1-name', document.getElementById('fam1-name').value);
-    localStorage.setItem('resq_fam1-phone', document.getElementById('fam1-phone').value);
     localStorage.setItem('resq_fam2-name', document.getElementById('fam2-name').value);
-    localStorage.setItem('resq_fam2-phone', document.getElementById('fam2-phone').value);
     localStorage.setItem('resq_blood', document.getElementById('blood-type').value);
+
+    if (phone1) localStorage.setItem('resq_fam1-phone', xorCipher(phone1, SECRET_KEY));
+    else localStorage.removeItem('resq_fam1-phone');
+    
+    if (phone2) localStorage.setItem('resq_fam2-phone', xorCipher(phone2, SECRET_KEY));
+    else localStorage.removeItem('resq_fam2-phone');
+
     alert("✅ Data saved successfully!");
     loadData();
 }
 
 function loadData() {
     const n1 = localStorage.getItem('resq_fam1-name') || '';
-    const p1 = localStorage.getItem('resq_fam1-phone') || '';
+    const p1Enc = localStorage.getItem('resq_fam1-phone') || '';
     const n2 = localStorage.getItem('resq_fam2-name') || '';
-    const p2 = localStorage.getItem('resq_fam2-phone') || '';
+    const p2Enc = localStorage.getItem('resq_fam2-phone') || '';
     const blood = localStorage.getItem('resq_blood') || '';
+
+    const p1 = p1Enc ? xorCipher(p1Enc, SECRET_KEY) : '';
+    const p2 = p2Enc ? xorCipher(p2Enc, SECRET_KEY) : '';
 
     if (document.getElementById('fam1-name')) document.getElementById('fam1-name').value = n1;
     if (document.getElementById('fam1-phone')) document.getElementById('fam1-phone').value = p1;
@@ -249,11 +281,13 @@ function loadData() {
         list.innerHTML = '';
         if (p1) list.innerHTML += `<div class="log-entry">👤 <b>${n1 || 'Contact 1'}</b>: ${p1}</div>`;
         if (p2) list.innerHTML += `<div class="log-entry">👤 <b>${n2 || 'Contact 2'}</b>: ${p2}</div>`;
+    } else {
+        display.style.display = 'none';
     }
 }
 
 // ==========================================
-// 7. GPS SHARE — WhatsApp + SMS fallback
+// 7. GPS SHARE — WhatsApp + SMS fallback (Decrypted)
 // ==========================================
 function getGPS() {
     if (!navigator.geolocation) {
@@ -261,17 +295,19 @@ function getGPS() {
         return;
     }
 
-    const p1 = localStorage.getItem('resq_fam1-phone') || '';
-    const p2 = localStorage.getItem('resq_fam2-phone') || '';
+    const p1Enc = localStorage.getItem('resq_fam1-phone') || '';
+    const p2Enc = localStorage.getItem('resq_fam2-phone') || '';
     const n1 = localStorage.getItem('resq_fam1-name') || 'Contact 1';
     const n2 = localStorage.getItem('resq_fam2-name') || 'Contact 2';
+
+    const p1 = p1Enc ? xorCipher(p1Enc, SECRET_KEY) : '';
+    const p2 = p2Enc ? xorCipher(p2Enc, SECRET_KEY) : '';
 
     if (!p1 && !p2) {
         alert("⚠️ No emergency contacts saved!\n\nPlease go to 'Medical ID & Contacts' and save at least one contact first.");
         return;
     }
 
-    // Show loading state
     const btn = document.querySelector('.btn.location');
     if (btn) btn.querySelector('.title').innerText = "Getting location...";
 
@@ -282,25 +318,19 @@ function getGPS() {
             const mapsUrl = `https://maps.google.com/?q=${lat},${lon}`;
             const msg = encodeURIComponent(`🚨 EMERGENCY! I need help.\nMy location: ${mapsUrl}\nSent via ResQ Portal`);
 
-            // Reset button text
             if (btn) btn.querySelector('.title').innerText = uiText['gps'][currentLang];
 
-            // Build list of contacts to share with
             const contacts = [];
             if (p1) contacts.push({ name: n1, phone: p1.replace(/\D/g, '') });
             if (p2) contacts.push({ name: n2, phone: p2.replace(/\D/g, '') });
 
             if (contacts.length === 0) return;
 
-            // Determine if mobile
             const isMobile = /Android|iPhone|iPad|iPod/i.test(navigator.userAgent);
 
             if (isMobile) {
-                // Open WhatsApp for first contact, SMS for second (or both WhatsApp)
-                // Show a choice dialog
                 showGPSShareOptions(contacts, msg, mapsUrl);
             } else {
-                // Desktop: show modal with options
                 showGPSShareOptions(contacts, msg, mapsUrl);
             }
         },
@@ -317,7 +347,6 @@ function getGPS() {
 }
 
 function showGPSShareOptions(contacts, encodedMsg, mapsUrl) {
-    // Create a temporary share panel
     const existing = document.getElementById('gps-share-panel');
     if (existing) existing.remove();
 
@@ -334,7 +363,7 @@ function showGPSShareOptions(contacts, encodedMsg, mapsUrl) {
     let btns = `<p style="margin:0 0 12px 0; font-weight:700; font-size:1rem;">📍 Share your location with:</p>`;
 
     contacts.forEach(c => {
-        const waLink = `https://wa.me/${c.phone}?text=${encodedMsg}`;
+        const waLink = `https://wa.me/91${c.phone}?text=${encodedMsg}`;
         const smsLink = `sms:${c.phone}?body=${encodedMsg}`;
         btns += `
             <div style="margin-bottom:12px; border:1px solid #eee; border-radius:10px; overflow:hidden;">
@@ -374,14 +403,12 @@ function openEmergencyModal() {
 }
 
 function closeEmergencyModal(event) {
-    // Close if clicking overlay background or close button (no event = button click)
     if (!event || event.target === document.getElementById('emergency-modal')) {
         document.getElementById('emergency-modal').classList.add('hidden');
         document.body.style.overflow = '';
     }
 }
 
-// Close modal on Escape key
 document.addEventListener('keydown', (e) => {
     if (e.key === 'Escape') closeEmergencyModal();
 });
@@ -412,9 +439,7 @@ function toggleVoice() {
 
 function toggleSOS() { document.getElementById('sos-screen').classList.toggle('hidden'); }
 
-// On load — restore saved data if on profile screen
 document.addEventListener("DOMContentLoaded", function() {
-    // Disable tel: links on desktop
     if (!/Android|iPhone|iPad|iPod/i.test(navigator.userAgent)) {
         document.querySelectorAll('.emergency-link').forEach(l => {
             l.removeAttribute('href');
