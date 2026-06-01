@@ -1,6 +1,6 @@
 # 🚨 ResQ Portal: Offline Emergency Response PWA
 
-[![Live Demo](https://img.shields.io/badge/demo-Live%20Portal-red)](#) *(Link your GitHub Pages URL here once live)*
+[![Live Demo](https://img.shields.io/badge/demo-Live%20Portal-red)](https://alphaneuro20.github.io/resq-portal)
 
 ## 📖 Project Overview
 The **ResQ Portal** is an offline-first Progressive Web Application (PWA) engineered to provide immediate, life-saving medical guidance and SOS utilities during critical emergencies. Designed with a focus on accessibility and high-stress usability, the application functions entirely without an internet connection once installed, ensuring users always have access to critical response protocols.
