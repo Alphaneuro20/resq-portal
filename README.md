@@ -29,7 +29,7 @@ To test this application on your local machine:
 4. Navigate to `http://localhost:8000` in your web browser.
 
 ## 👥 Development Team & Methodology
-This project was developed using an **AI-Assisted Development workflow**. Rather than manually writing every line of code, our team focused on the high-level architecture, prompt engineering, and iterative refinement. 
+architected using AI-assisted rapid prototyping, with focus on system design, testing, and iterative refinement. Rather than manually writing every line of code, our team focused on the high-level architecture, prompt engineering, and iterative refinement. 
 
 * **Aseem & Nirmaan** - *Project Architects & Prompt Engineers*
   * Conceptualized the offline-first SOS and medical guide functionality.
